@@ -1,6 +1,9 @@
 # tamago
 A microkernel implemented in rust 
 
+Tutor 
+[write a kernel in Rust](https://os.phil-opp.com/second-edition/) 
+
 TODO
 
 Part I Microkernel design 
