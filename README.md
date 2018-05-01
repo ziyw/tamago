@@ -10,6 +10,8 @@ install cross-compiler (covered in intermezzos, to install cross-compilier for m
 - run `make run` command 
 
 ## Resrouces 
+[osdever](http://www.osdever.net/bkerndev/index.php)
+
 [intermezzos](http://intermezzos.github.io/)
 
 [write a kernel in Rust](https://os.phil-opp.com/second-edition/) 
