@@ -28,4 +28,6 @@ clean:
 	cargo clean
 
 cargo: 
-	xargo build --release --target tamago 
+	RUST_TARGET_PATH=$(shell pwd) xargo build --release --target tamago 
+
+

@@ -1,3 +1,14 @@
+use core::fmt; 
+use spin::Mutex; 
+use core::ptr::Unique; 
+
+pub static VGA_BUFFER: Mutex<VGA> = Mutex::new ( VGA {
+    pos: 0,
+    color_code: 0,
+    buffer: unsafe { Unique::new_unchecked(0xb8000 as *mut _) }, 
+});
+
+
 #[allow(dead_code)]
 #[repr(u8)]
 #[derive(Debug, Clone, Copy)]
@@ -41,9 +52,8 @@ pub struct Buffer {
     matrix: [[Entry; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }
 
-use core::ptr::Unique; 
 
-struct VGA {
+pub struct VGA {
     pos: usize, // current position in thr row 
     color_code: u8, 
     buffer: Unique<Buffer>, 
@@ -51,6 +61,14 @@ struct VGA {
 
 
 impl VGA {
+    pub fn init(&mut self) {
+    
+        let attribute: Attribute = Attribute {
+            back_color: Color::Black,
+            front_color: Color::LightGreen, 
+        }; 
+
+        let color_code = attribute.get_code();
 
     
     pub fn put_char(&mut self, b: u8) {
@@ -71,6 +89,12 @@ impl VGA {
 
     }
 
+    pub fn put_string(&mut self, s: &str) {
+        for byte in s.bytes() {
+            self.put_char(byte); 
+        }
+    }
+    
     pub fn put_line(&mut self) {
         let b: u8 = b' ';
         let e: Entry = ((b as u16) | (self.color_code as u16) << 8); 
@@ -94,25 +118,7 @@ impl VGA {
 }
 
 pub fn test() {
-    let attribute: Attribute = Attribute {
-        back_color: Color::Black,
-        front_color: Color::LightGreen, 
-    }; 
-
-    let color_code = attribute.get_code(); 
-    
-    let mut vga: VGA = VGA {
-        pos: 0,
-        color_code: color_code, 
-        buffer: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
-    };
-
-    vga.put_char(b'\n');
-    vga.put_char(b'A');
-    vga.put_char(b'\n');
-    vga.put_char(b'B');
-    vga.put_char(b'\n');
-    vga.put_char(b'C');
+    VGA_BUFFER.init(); 
 }
 
 
