@@ -1,5 +1,6 @@
-// vga buffer 
-
+#[allow(dead_code)]
+#[repr(u8)]
+#[derive(Debug, Clone, Copy)]
 pub enum Color {
     Black = 0,
     Blue = 1,
@@ -19,99 +20,99 @@ pub enum Color {
     White = 15, 
 }
 
-type char_bits = u8;
-type attri_bits = u8;
-type vga_entry = u16; 
-
-pub fn get_attribute(back_color: Color, front_color: Color) -> attri_bits {
-    ((back_color as u8) << 4) | (front_color as u8) 
+#[derive(Debug, Clone, Copy)]
+pub struct Attribute {
+    back_color: Color, 
+    front_color: Color, 
 }
 
-const BUFFER_WIDTH: usize = 80;
-const BUFFER_HEIGHT: usize = 25;
-
-pub struct VGA_Buffer {
-    pos: usize, // current cursor position 
-    att: attri_bits, // color 
-    buffer: *mut vga_entry,  
-    // buffer: [[vga_entry; BUFFER_WIDTH]; BUFFER_HEIGHT],
+impl Attribute {
+    pub fn get_code(&self) -> u8 {
+        ((self.back_color as u8) << 4 | (self.front_color as u8)) 
+    }
 }
 
-impl VGA_Buffer {
+type Entry = u16; 
+
+const BUFFER_WIDTH: usize = 80; 
+const BUFFER_HEIGHT: usize = 25; 
+
+pub struct Buffer {
+    matrix: [[Entry; BUFFER_WIDTH]; BUFFER_HEIGHT],
+}
+
+use core::ptr::Unique; 
+
+struct VGA {
+    pos: usize, // current position in thr row 
+    color_code: u8, 
+    buffer: Unique<Buffer>, 
+}
+
+
+impl VGA {
+
     
-    pub fn get_vga_entry(&self, b: char_bits) -> vga_entry {
-        (b as u16) | ((self.att as u16) << 8) 
-    }
-    
-    pub fn putchar(&mut self, b: char_bits) {
-        
-        if (b == ('\n' as u8)) {
-            self.putline();
-        }
-
-        let entry = self.get_vga_entry(b); 
-        
-
-        let r = self.pos / BUFFER_WIDTH;
-        let c = self.pos % BUFFER_WIDTH; 
-
-        unsafe {
-            *self.buffer.add(self.pos) = entry;
-        }
-        
-        self.pos = self.pos + 1;
-    }
-    
-    pub fn putline(&mut self) {
-        let empty = self.get_vga_entry(b' ');
-        
-        let rest = BUFFER_WIDTH - 1 - self.pos % BUFFER_WIDTH;
-
-        for c in 0..rest {
-            unsafe {
-                *self.buffer.add(self.pos) = empty;
-                self.pos += 1;
+    pub fn put_char(&mut self, b: u8) {
+        if b == b'\n' {
+            self.put_line();
+            self.pos = 0; 
+        } else {
+            if self.pos == BUFFER_WIDTH {
+                self.put_line();
+                self.pos = 0;
             }
+
+            let e: Entry = ((b as u16) | (self.color_code as u16) << 8); 
+            let col: usize = self.pos;  
+            self.buffer().matrix[BUFFER_HEIGHT-1][col] = e; 
+            self.pos += 1; 
         }
 
     }
 
-    pub fn clear(&mut self){
-        self.pos = 0;
-        let empty = self.get_vga_entry(b' ');
-
-        for r in 0..BUFFER_HEIGHT {
+    pub fn put_line(&mut self) {
+        let b: u8 = b' ';
+        let e: Entry = ((b as u16) | (self.color_code as u16) << 8); 
+        for r in 1..BUFFER_HEIGHT {
             for c in 0..BUFFER_WIDTH {
-                unsafe {
-                    *self.buffer.add(r*BUFFER_WIDTH + c) = empty;  
-                }
+                let old = self.buffer().matrix[r][c]; 
+                self.buffer().matrix[r-1][c] = old;
             }
         }
-    }
 
-
-    pub fn print(&mut self, s: &str) {
-        for byte in s.bytes() {
-            self.putchar(byte);
+        for c in 0..BUFFER_WIDTH {
+            self.buffer().matrix[BUFFER_HEIGHT-1][c] = e; 
         }
     }
-}
 
+    pub fn buffer(&mut self) -> &mut Buffer {
+        unsafe { self.buffer.as_mut() } 
+    }
+
+
+}
 
 pub fn test() {
-    
-    let back_color = Color::Black;
-    let front_color = Color::LightGreen; 
-    let att = get_attribute( back_color, front_color); 
-
-    let mut  vga_buffer: VGA_Buffer = VGA_Buffer {
-        pos: 0,
-        att: att, 
-        buffer: unsafe {(0xb8000 as *mut _) }, 
+    let attribute: Attribute = Attribute {
+        back_color: Color::Black,
+        front_color: Color::LightGreen, 
     }; 
-    
-    vga_buffer.clear();
-    
-    vga_buffer.print("Welcome to tamago.");
 
+    let color_code = attribute.get_code(); 
+    
+    let mut vga: VGA = VGA {
+        pos: 0,
+        color_code: color_code, 
+        buffer: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
+    };
+
+    vga.put_char(b'\n');
+    vga.put_char(b'A');
+    vga.put_char(b'\n');
+    vga.put_char(b'B');
+    vga.put_char(b'\n');
+    vga.put_char(b'C');
 }
+
+

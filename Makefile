@@ -28,4 +28,4 @@ clean:
 	cargo clean
 
 cargo: 
-	xargo build --release --target=tamago 
+	xargo build --release --target tamago 

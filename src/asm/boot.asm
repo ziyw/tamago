@@ -1,5 +1,5 @@
 global start
-extern kmain 
+extern kmain ; kernel main  
 
 section .bss
 
@@ -76,6 +76,7 @@ start:
 ; jump to long mode 
   jmp gdt64.code:kmain
 
+
 ; Global descriptor table 
 section .rodata 
 gdt64:
@@ -88,6 +89,4 @@ gdt64:
   dw .pointer - gdt64 - 1
   dq gdt64 
 
-
-
-
+  
