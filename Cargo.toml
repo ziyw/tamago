@@ -8,6 +8,7 @@ crate-type = ["staticlib"]
 
 [dependencies]
 spin = "0.4.8" 
+volatile = "0.2.4"
 
 [profile.release]
 panic = "abort" 

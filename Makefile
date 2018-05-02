@@ -13,7 +13,7 @@ target/boot.o: src/asm/boot.asm
 	nasm -f elf64 src/asm/boot.asm -o target/boot.o
 
 target/kernel.bin: target/multiboot_header.o target/boot.o src/asm/linker.ld cargo
-	x86_64-pc-elf-ld -n -o target/kernel.bin -T src/asm/linker.ld target/multiboot_header.o target/boot.o target/tamago/release/libtamago.a
+	x86_64-pc-elf-ld -n --gc-sections -o target/kernel.bin -T src/asm/linker.ld target/multiboot_header.o target/boot.o target/tamago/release/libtamago.a
 
 target/os.iso: target/kernel.bin src/asm/grub.cfg
 	mkdir -p target/isofiles/boot/grub

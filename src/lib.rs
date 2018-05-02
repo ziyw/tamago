@@ -5,16 +5,16 @@
 
 #![no_std]
 extern crate spin; 
+extern crate volatile; 
 
-
+#[macro_use] 
 mod vga; 
 
 
 #[no_mangle]
 pub extern fn kmain() -> ! {
 
-    vga::VGA_BUFFER.init(); 
-    vga::test(); 
+    println!("welcome to tamago");
     loop { } 
 }
 
@@ -22,6 +22,7 @@ pub extern fn kmain() -> ! {
 extern fn eh_personality() {
 }
 
+#[no_mangle]
 #[lang = "panic_fmt"]
 extern fn rust_begin_panic() -> ! {
     loop { } 
