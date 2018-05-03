@@ -6,17 +6,47 @@
 #![no_std]
 extern crate spin; 
 extern crate volatile; 
+extern crate multiboot2; 
 
 #[macro_use] 
 mod vga; 
-
+mod frame; 
 
 #[no_mangle]
-pub extern fn kmain() -> ! {
+pub extern fn kmain(multiboot_info_address: usize) -> ! {
 
     println!("welcome to tamago");
+    
+    let boot_info = unsafe { multiboot2::load(multiboot_info_address) };
+    let memory_map_tag = boot_info.memory_map_tag().expect("Memory map tag requried");
+    let elf_sections_tag = boot_info.elf_sections_tag().expect("Elf sections tag required");
+
+    let kernel_start: usize = elf_sections_tag.sections().map(|s| s.addr).min().unwrap() as usize;
+    let kernel_end: usize = elf_sections_tag.sections().map(|s| s.addr+s.size).max().unwrap() as usize;
+
+    let multiboot_start: usize = multiboot_info_address;
+    let multiboot_end: usize  = multiboot_start + (boot_info.total_size as usize);
+    
+    let mut frameAllocator: frame::FrameAllocator = frame::new(memory_map_tag.memory_areas(), kernel_start, kernel_end,
+                                multiboot_start, multiboot_end);
+
+
+    for _ in 0.. {
+        if let Some(frame) = frameAllocator.allocate() {
+            println!("New frame num {}", frame);
+        }
+    }
+
     loop { } 
 }
+
+
+
+
+
+
+
+
 
 #[lang = "eh_personality"]
 extern fn eh_personality() {
@@ -24,7 +54,10 @@ extern fn eh_personality() {
 
 #[no_mangle]
 #[lang = "panic_fmt"]
-extern fn rust_begin_panic() -> ! {
+extern fn rust_begin_panic(fmt: core::fmt::Arguments, file: &'static str, line: u32) -> ! {
+    println!("      PANIC in {} at line {}:", file, line);
+    println!("      {}",fmt);  
+    
     loop { } 
 }
 
