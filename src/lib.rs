@@ -7,16 +7,22 @@
 extern crate spin; 
 extern crate volatile; 
 extern crate multiboot2; 
+#[macro_use]
+extern crate bitflags; 
 
 #[macro_use] 
 mod vga; 
 mod frame; 
+mod page; 
 
 #[no_mangle]
 pub extern fn kmain(multiboot_info_address: usize) -> ! {
 
     println!("welcome to tamago");
-    
+   
+    page::test(); 
+/*
+    // TODO clean this part or move to frame module 
     let boot_info = unsafe { multiboot2::load(multiboot_info_address) };
     let memory_map_tag = boot_info.memory_map_tag().expect("Memory map tag requried");
     let elf_sections_tag = boot_info.elf_sections_tag().expect("Elf sections tag required");
@@ -36,7 +42,7 @@ pub extern fn kmain(multiboot_info_address: usize) -> ! {
             println!("New frame num {}", frame);
         }
     }
-
+*/
     loop { } 
 }
 

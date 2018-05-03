@@ -1,12 +1,15 @@
 //Memory allocation 
 
 pub const FRAME_SIZE: usize = 4096;
-type Frame = usize; // Frame number  
+pub type Frame = usize; // Frame number  
 
 pub fn addr_to_frame(address: usize) -> Frame {
     address / FRAME_SIZE 
 }
 
+pub fn frame_to_addr(frame: Frame) -> usize {
+    frame * FRAME_SIZE 
+}
 
 use multiboot2::{MemoryAreaIter, MemoryArea};
 
