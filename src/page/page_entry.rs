@@ -24,7 +24,7 @@ impl Entry {
         self.0 == 0
     }
 
-    pub fn zero(&mut self) {
+    pub fn set_zero(&mut self) {
         self.0 = 0;
     }
 

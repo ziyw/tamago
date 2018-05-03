@@ -74,6 +74,7 @@ start:
 ; Load gdt  
   lgdt [gdt64.pointer]
 
+
 ; update segment registers 
   mov ax, gdt64.data 
   mov ss, ax ; stack segment 
@@ -82,6 +83,7 @@ start:
 
 ; jump to long mode 
   jmp gdt64.code:kmain
+
 
 
 ; Global descriptor table 
@@ -96,4 +98,6 @@ gdt64:
   dw .pointer - gdt64 - 1
   dq gdt64 
 
-  
+section .rodata 
+idt64:
+   

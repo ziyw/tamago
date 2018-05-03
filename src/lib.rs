@@ -2,6 +2,8 @@
 #![feature(unique)]
 #![feature(const_unique_new)] 
 #![feature(ptr_internals)] 
+#![feature(abi_x86_interrupt)] 
+#![feature(asm)]
 
 #![no_std]
 extern crate spin; 
@@ -9,18 +11,34 @@ extern crate volatile;
 extern crate multiboot2; 
 #[macro_use]
 extern crate bitflags; 
+extern crate x86_64;
+#[macro_use] 
+extern crate lazy_static; 
+extern crate cpuio;
 
 #[macro_use] 
 mod vga; 
 mod frame; 
 mod page; 
+mod pic; 
+mod interrupt;
+
 
 #[no_mangle]
 pub extern fn kmain(multiboot_info_address: usize) -> ! {
 
     println!("welcome to tamago");
-   
-    page::test(); 
+
+    unsafe { asm!("cli");}
+    pic::init(); 
+    interrupt::init();
+    unsafe { asm!("sti");} 
+    x86_64::instructions::interrupts::int3();
+//    x86_64::instructions::interrupts::int3();
+//    println!("didn't crash");
+
+
+    // page::test(); 
 /*
     // TODO clean this part or move to frame module 
     let boot_info = unsafe { multiboot2::load(multiboot_info_address) };
@@ -61,8 +79,8 @@ extern fn eh_personality() {
 #[no_mangle]
 #[lang = "panic_fmt"]
 extern fn rust_begin_panic(fmt: core::fmt::Arguments, file: &'static str, line: u32) -> ! {
-    println!("      PANIC in {} at line {}:", file, line);
-    println!("      {}",fmt);  
+    println!("PANIC in {} at line {}:", file, line);
+    println!("{}",fmt);  
     
     loop { } 
 }
