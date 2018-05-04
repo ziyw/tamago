@@ -8,17 +8,7 @@ lazy_static! {
     static ref IDT: Idt = {
         let mut idt = Idt::new();
        
-        let divisor: u32 = 1193180 / 50; 
-        let l: u16 = (divisor & 0x00ff) as u16;
-        let h: u16 = ((divisor >> 8) & 0x00ff) as u16;
-        
-       /* unsafe {
-            asm!("sti");
-            //outb(0x43, 0x36);
-            //outb(0x40, l);
-            //outb(0x40, h);
-        }
-        */
+        set_up_pit(50);
         idt.breakpoint.set_handler_fn(breakpoint_handler);
         idt.interrupts[0].set_handler_fn(irq0_handler);
         idt.interrupts[1].set_handler_fn(irq1_handler);
@@ -31,7 +21,18 @@ pub fn init() {
 
 }
 
+pub fn set_up_pit(frequency: u16) {
 
+    let divisor: u16 = 1193180 / frequency; 
+    let l: u8 = (divisor & 0xff) as u8;
+    let h: u8 = ((divisor >> 8) & 0xff) as u8;
+    
+    unsafe {
+        outb(0x36,0x43);
+        outb(l, 0x40);
+        outb(h, 0x40);
+    }
+}
 extern "x86-interrupt" fn irq0_handler(_: &mut ExceptionStackFrame) {
     //println!("timer done");
     KCLOCK.lock().inc();
