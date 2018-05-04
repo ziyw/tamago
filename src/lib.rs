@@ -33,7 +33,7 @@ pub extern fn kmain(multiboot_info_address: usize) -> ! {
     pic::init(); 
     interrupt::init();
     unsafe { asm!("sti");} 
-    x86_64::instructions::interrupts::int3();
+    // x86_64::instructions::interrupts::int3();
 //    x86_64::instructions::interrupts::int3();
 //    println!("didn't crash");
 

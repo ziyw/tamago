@@ -2,7 +2,9 @@
 use cpuio::{inb, outb}; 
 
 pub fn init() {
-    remap(0x20,0x28); 
+    let master_offset: u8 = 0x20;
+    let slave_offset: u8 = 0x28;
+    remap(master_offset, slave_offset);
 }
 
 const PIC1: u16 = 0x20;
@@ -55,7 +57,7 @@ pub fn send_EOI(irq: u8) {
     }
 
     unsafe {
-        outb(PIC1_COMMAND as u8, PIC_EOI);
+        outb( PIC_EOI as u8, PIC1_COMMAND);
     }
     
 }
