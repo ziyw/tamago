@@ -22,6 +22,7 @@ mod frame;
 mod page; 
 mod pic; 
 mod interrupt;
+mod clock;
 
 
 #[no_mangle]
@@ -32,8 +33,9 @@ pub extern fn kmain(multiboot_info_address: usize) -> ! {
     unsafe { asm!("cli");}
     pic::init(); 
     interrupt::init();
+    clock::init();
     unsafe { asm!("sti");} 
-    x86_64::instructions::interrupts::int3();
+    //x86_64::instructions::interrupts::int3();
 //    x86_64::instructions::interrupts::int3();
 //    println!("didn't crash");
 
