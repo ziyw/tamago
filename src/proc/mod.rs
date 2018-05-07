@@ -10,7 +10,8 @@ pub struct Proc {
 pub struct Table {
     procs: [Proc; 1024],
 }
-
+// TODO 
+// Table should be global 
 
 
 pub fn init() {
