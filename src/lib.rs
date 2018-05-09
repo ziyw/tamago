@@ -25,7 +25,6 @@ mod interrupt;
 mod clock;
 mod proc; 
 mod system; 
-mod channel; 
 #[no_mangle]
 pub extern fn kmain(multiboot_info_address: usize) -> ! {
 
