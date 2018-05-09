@@ -25,6 +25,9 @@ mod interrupt;
 mod clock;
 mod proc; 
 mod system; 
+mod process;
+
+
 #[no_mangle]
 pub extern fn kmain(multiboot_info_address: usize) -> ! {
 
@@ -35,6 +38,7 @@ pub extern fn kmain(multiboot_info_address: usize) -> ! {
     interrupt::init();
     clock::init();
     unsafe { asm!("sti");} 
+    process::init();
     
     proc::init();
     //x86_64::instructions::interrupts::int3();

@@ -3,6 +3,7 @@ use x86_64::structures::idt::ExceptionStackFrame;
 use cpuio::outb;
 use pic; 
 use clock::KCLOCK;
+use process; 
 
 lazy_static! {
     static ref IDT: Idt = {
@@ -36,7 +37,8 @@ pub fn set_up_pit(frequency: u16) {
 extern "x86-interrupt" fn irq0_handler(_: &mut ExceptionStackFrame) {
     //println!("timer done");
     KCLOCK.lock().inc();
-    // println!("current time is {}", KCLOCK.lock().get_time());
+    println!("current time is {}", KCLOCK.lock().get_time());
+    process::schedule();
     pic::send_eoi(0);
 
 }
