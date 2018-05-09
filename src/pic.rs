@@ -49,7 +49,7 @@ pub fn remap(offset1: u8, offset2: u8) {
         outb(a2, PIC2_DATA);
     }
 }
-pub fn send_EOI(irq: u8) {
+pub fn send_eoi(irq: u8) {
     if irq >= 8 {
         unsafe {
             outb(PIC_EOI as u8, PIC2_COMMAND);
