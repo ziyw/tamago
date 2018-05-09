@@ -22,7 +22,6 @@ pub fn init() {
 }
 
 pub fn set_up_pit(frequency: u16) {
-:q
 
     let divisor: u16 = 1193180 / frequency; 
     let l: u8 = (divisor & 0xff) as u8;
@@ -50,7 +49,6 @@ extern "x86-interrupt" fn irq1_handler(_: &mut ExceptionStackFrame) {
     pic::send_eoi(1);
 }
 
->>>>>>> temp
 extern "x86-interrupt" fn breakpoint_handler( stack_frame: &mut ExceptionStackFrame) {
     println!("Exception: BREAKPOINT\n{:#?}", stack_frame);
 }
