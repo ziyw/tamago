@@ -37,8 +37,10 @@ pub fn set_up_pit(frequency: u16) {
 extern "x86-interrupt" fn irq0_handler(_: &mut ExceptionStackFrame) {
     //println!("timer done");
     KCLOCK.lock().inc();
-    println!("current time is {}", KCLOCK.lock().get_time());
-    process::schedule();
+    if KCLOCK.lock().get_time()%1000 == 0 {
+        println!("current time is {}", KCLOCK.lock().get_time());
+        process::schedule();
+    }
     pic::send_eoi(0);
 
 }
