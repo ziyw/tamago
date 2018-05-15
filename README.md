@@ -9,7 +9,10 @@ install cross-compiler (covered in intermezzos, to install cross-compilier for m
 
 - run `make run` command 
 
-## Resrouces 
+## Related Resrouces 
+
+These people and projects are amazing. 
+
 [osdever](http://www.osdever.net/bkerndev/index.php)
 
 [intermezzos](http://intermezzos.github.io/)
@@ -26,13 +29,6 @@ install cross-compiler (covered in intermezzos, to install cross-compilier for m
 
 [Rustonomicon](https://doc.rust-lang.org/nomicon/)
 
-## Desgin Document 
-
-
-## Implementation 
-
-
-## Evaluation  
 
 
 
