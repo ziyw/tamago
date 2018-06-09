@@ -1,6 +1,9 @@
 # tamago
 A microkernel implemented in rust 
 
+
+
+
 ## Current progress 
 To run the code
 
@@ -8,6 +11,7 @@ To run the code
 install cross-compiler (covered in intermezzos, to install cross-compilier for macOS, use the [script](http://intermezzos.github.io/book/first-edition/appendix/osx-install.html) 
 
 - run `make run` command 
+
 
 ## Related Resrouces 
 
