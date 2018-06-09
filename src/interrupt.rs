@@ -3,7 +3,9 @@ use x86_64::structures::idt::ExceptionStackFrame;
 use cpuio::outb;
 use pic; 
 use clock::KCLOCK;
+
 use process; 
+use keyboard; 
 
 lazy_static! {
     static ref IDT: Idt = {

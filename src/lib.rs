@@ -26,6 +26,7 @@ mod clock;
 mod proc; 
 mod system; 
 mod process;
+mod keyboard;
 
 
 #[no_mangle]
@@ -39,7 +40,6 @@ pub extern fn kmain(multiboot_info_address: usize) -> ! {
     clock::init();
     unsafe { asm!("sti");} 
     process::init();
-    
     proc::init();
     //x86_64::instructions::interrupts::int3();
 //    x86_64::instructions::interrupts::int3();
